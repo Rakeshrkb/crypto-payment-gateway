@@ -39,9 +39,9 @@ QuickNode Account (with Streams add-on)
 
 ### ⚙️ Setup Instructions
 
-clone https://github.com/Rakeshrkb/crypto-payment-gateway.git
 
-```
+```bash
+git clone https://github.com/Rakeshrkb/crypto-payment-gateway.git
 cd crypto-payment-gateway
 npm install
 ```
@@ -49,15 +49,16 @@ npm install
 
 Create a .env file in the root directory and add the following:
 
-```
+```bash
 PORT=5000
 MONGODB_URI=your_mongodb_connection_string
 JWT_SECRET=your_secret_key
 INR_PER_USD=83.5
 QUICKNODE_API_KEY=your_quicknode_api_key
 ```
-
+```bash
 npm run dev
+```
 
 To receive webhooks from QuickNode locally:
 ngrok http 5000
@@ -83,6 +84,13 @@ GET /api/merchant/getMySelection               # Returns chain and token selecti
 POST /api/merchant/createOrUpdateSelection     # Creats or updates selections of blockchain and tokens 
 POST /api/merchant/saveMerchantConfig          # Saves configurations for a merchant/user
 ```
+
+### QUICKNODE EVENT LISTENER
+```bash
+POST /api/blockchains/receive_quicknode_events  # when a transaction matches with KV store, quicknode pushes here
+``` 
+
+
 
 ## FUNCTIONALITIES
 ```bash 
