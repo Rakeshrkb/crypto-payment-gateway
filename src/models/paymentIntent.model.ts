@@ -1,3 +1,4 @@
+import { required } from 'joi';
 import mongoose, { Schema, Document } from 'mongoose';
 
 export enum PaymentStatus {
@@ -15,6 +16,7 @@ export interface IPaymentIntent extends Document {
   amountInUsd: number;
   exactTokenAmount: string; // The amount the user must actually send
   chainId: number;
+  quicknodeKey: string;
   status: PaymentStatus;
   expiresAt: Date;
 }
@@ -29,6 +31,7 @@ const paymentIntentSchema = new Schema<IPaymentIntent>(
     amountInUsd: { type: Number, required: true },
     exactTokenAmount: { type: String, required: true },
     chainId: { type: Number, required: true },
+    quicknodeKey: {type: String, required: true},
     status: { 
       type: String, 
       enum: Object.values(PaymentStatus), 

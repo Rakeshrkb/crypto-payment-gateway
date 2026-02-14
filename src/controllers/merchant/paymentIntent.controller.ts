@@ -60,7 +60,8 @@ export const createPaymentIntent = asyncHandler( async (req: Request, res: Respo
 
     const intentId = uuidv4();
     const onChainAmountRaw = Math.round(finalUsdAmount * 1_000_000).toString();
-    await setQuickNodeKV(merchant!.monitoringAddress, onChainAmountRaw, intentId);
+    const key = `${merchant!.monitoringAddress.toLowerCase()}_${onChainAmountRaw}`;
+    await setQuickNodeKV(key, intentId);
 
 // 3. Save to DB using the DAO
     const intent = await createPaymentIntentDao(
@@ -71,7 +72,8 @@ export const createPaymentIntent = asyncHandler( async (req: Request, res: Respo
         amountInInr,
         finalUsdAmount,    // amountInUsd
         onChainAmountRaw,    // exactTokenAmount (assuming 1:1 stablecoin)
-        chainId
+        chainId,
+        key
     );
 
     return new ApiResponse(200, intent, `Please pay exactly $${finalUsdAmount.toFixed(2)} ${tokenSymbol}`);

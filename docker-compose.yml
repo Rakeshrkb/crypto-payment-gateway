@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  # 1. This is your Node.js app service
+  crypto-payment-gateway:
+    build: .
+    container_name: crypto-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis-db
+      - REDIS_PORT=6379
+      - MONGODB_URL=${MONGODB_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - QUICKNODE_API_KEY=${QUICKNODE_API_KEY}
+    depends_on:
+      - redis-db
+
+  # 2. This is your Redis service
+  redis-db:
+    image: redis:7-alpine
+    container_name: redis-db
+    ports:
+      - "6379:6379"
+    restart: always

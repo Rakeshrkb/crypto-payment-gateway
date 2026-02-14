@@ -8,7 +8,8 @@ export const createPaymentIntentDao = async (
   amountInr: number,
   amountInUsd: number,
   exactTokenAmount: string,
-  chainId: number
+  chainId: number,
+  key: string
 ) => {
   return await PaymentIntent.create({
     merchantId,
@@ -19,6 +20,7 @@ export const createPaymentIntentDao = async (
     amountInUsd,
     exactTokenAmount,
     chainId,
+    quicknodeKey : key,
     // Setting expiry to 15 minutes from now
     expiresAt: new Date(Date.now() + 15 * 60 * 1000),
   });
