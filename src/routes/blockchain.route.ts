@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import * as BlockchainController from '../controllers/merchant/blockchain.controller';
 import { validateIntentThroughQuickNode, testQueueAndWorkers } from "../controllers/quickNode/quickNode.controller";
-
+import { verifyQuickNodePayload } from '../middlewares/authQuickNode';
 
 
 const blockchainRouter = Router();
@@ -12,12 +12,11 @@ const blockchainRouter = Router();
     
     blockchainRouter.get('/getAllTokensGroupedByChain', BlockchainController.getAllTokensGroupedByChainController);
 
-    // blockchainRouter.post('/receive_quicknode_events',verifyQuickNodeToken, validateIntentThroughQuickNode );
+    // blockchainRouter.post('/receive_quicknode_events', verifyQuickNodeToken, validateIntentThroughQuickNode );
 
-    blockchainRouter.post('/receive_quicknode_events', validateIntentThroughQuickNode );
+    blockchainRouter.post('/receive_quicknode_events',verifyQuickNodePayload, validateIntentThroughQuickNode );
 
     blockchainRouter.post('/test-events', testQueueAndWorkers );
-
 
 
 export default blockchainRouter;

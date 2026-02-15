@@ -1,22 +1,34 @@
 import { Worker, Job } from "bullmq";
 import axios from "axios";
-import { connection } from "../../configs/server.config";
-import { removeQuickNodeKey } from "../quicknode.kvservice";
+import crypto from "crypto";
+import { connection } from "../configs/server.config";
+import { removeQuickNodeKey } from "../service/quicknode.kvservice";
 
 export const initWebHookWorker = () => {
   const webHookWorker = new Worker(
     "merchant-webhooks",
     async (job: Job) => {
-      const { url, payload, compositeKey } = job.data;
-      console.log(
-        `🚀 Attempting to notify merchant for Intent: ${payload.intentId}`,
-      );
+      const { compositeKey, payload } = job.data;
+      const { merchantSecret, amount, webHookUrl, txHash, intentId } = payload;
+      console.log(`🚀 Attempting to notify merchant for Intent: ${intentId}`);
+
+      
+      const signature = crypto
+        .createHmac("sha256", merchantSecret)
+        .update(payload)
+        .digest("hex");
 
       try {
-        await axios.post(url, payload, { timeout: 10000 });
+        await axios.post(webHookUrl, payload, {
+          headers: {
+            "Content-Type": "application/json",
+            "x-gateway-signature": signature, 
+          },
+          timeout: 10000,
+        });
 
         console.log(
-          `✅ Merchant notified successfully for ${payload.intentId}`,
+          `✅ Merchant notified successfully for ${intentId}`,
         );
         // 3. Cleanup: Remove the key from QuickNode KV now that delivery is confirmed
         await removeQuickNodeKey(compositeKey);

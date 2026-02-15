@@ -40,11 +40,11 @@ export const validateIntentThroughQuickNode = asyncHandler(async (req: Request, 
             console.log(`✅ Payment Confirmed! Intent: ${intentId} | TX: ${txHash}`);
             const merchant = await getMerchantByMerchantId(updatedIntent!.merchantId.toString());
             await webhookQueue.add('notify-merchant',{
-                url: merchant?.webhookUrl,
                 compositeKey: updatedIntent.quicknodeKey,
                 payload: {
-                status: 'CONFIRMED',
+                merchantSecret: merchant!.webhookSecret,
                 amount: event.value,
+                webHookUrl: merchant?.webhookUrl,
                 txHash: event.transactionHash,
                 intentId: updatedIntent.intentId 
             }

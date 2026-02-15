@@ -4,7 +4,7 @@ import { connectDB } from "./constants/connectDb";
 import { gracefulShutDown } from "./configs/server.config";
 import { ErrorHandler } from "./middlewares/errorHandler";
 import mainRouter from "./routes/index";
-import { initWebHookWorker } from "./service/workers/webHook.worker";
+import { initWebHookWorker } from "./workers/webHook.worker";
 import { initWebHookQueue } from "./queues/webhook.queue";
 
 dotenv.config();
