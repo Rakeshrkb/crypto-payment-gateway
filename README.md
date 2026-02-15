@@ -71,7 +71,6 @@ Copy the https://...ngrok-free.dev URL and update your QuickNode Stream destinat
 ```bash
 POST /api/auth/signUp     # Register with email/password
 POST /api/auth/signIn     # Login email/password
-GET  /api/v2/balance    # Requires Authorization: Bearer <token>
 ```
 ## GETTERS
 ```bash

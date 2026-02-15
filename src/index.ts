@@ -1,4 +1,6 @@
 import express from "express";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./configs/swagger";
 import dotenv from "dotenv";
 import { connectDB } from "./constants/connectDb";
 import { gracefulShutDown } from "./configs/server.config";
@@ -18,12 +20,13 @@ const startServer = async () => {
     await connectDB();
     queueInstance = await initWebHookQueue();
     workerInstance = await initWebHookWorker();
-
+    
     app.use("/api/", mainRouter);
 
     app.get("/", (_req, res) => {
       res.send("TS backend running 🚀");
     });
+    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
     app.use(ErrorHandler);
     const PORT = process.env.PORT || 3000;
 

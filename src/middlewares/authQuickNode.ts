@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { Request, Response, NextFunction } from "express";
 import { ApiError } from "../utils/apiError.utils";
 
@@ -6,20 +7,31 @@ export const verifyQuickNodePayload = (
   res: Response,
   next: NextFunction,
 ) => {
-  // const incomingToken = req.headers['x-qn-token'] || req.headers['authorization'];
-  // console.log("token is ", incomingToken);
+  try {
+    const signature = req.headers["x-qn-signature"] as string;
+    const secret = process.env.QUICKNODE_SECURITY_TOKEN;
 
-  // if (!incomingToken || incomingToken !== QUICKNODE_SECURITY_TOKEN) {
-  //     throw new ApiError("Unauthorized: Invalid QuickNode Token", 401);
-  // }
+    if (!signature || !secret) {
+      throw new ApiError("Missing webhook signature", 401);
+    }
 
-  const qnHeader = req.headers["x-qn-signature"];
-  const localToken = process.env.QUICKNODE_SECURITY_TOKEN;
-  // 2. Check if the token exists and matches
-  if (!qnHeader || qnHeader !== localToken) {
-    console.warn("⚠️  Unauthorized Webhook Attempt detected!");
-    return new ApiError("Invalid Security Token", 401);
+    const rawBody = req.body; // Buffer (because express.raw)
+    
+    const expectedSignature = crypto
+      .createHmac("sha256", secret)
+      .update(rawBody)
+      .digest("hex");
+
+    if (signature !== expectedSignature) {
+      console.warn("⚠️ Invalid Webhook Signature!");
+      throw new ApiError("Invalid webhook signature", 401);
+    }
+
+    // Convert buffer to JSON for next middleware
+    req.body = JSON.parse(rawBody.toString());
+
+    next();
+  } catch (error) {
+    next(error);
   }
-
-  next();
 };
